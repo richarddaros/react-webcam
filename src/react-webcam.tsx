@@ -58,6 +58,8 @@ export interface WebcamProps extends React.HTMLProps<HTMLVideoElement> {
   minScreenshotWidth?: number;
   onUserMedia: (stream: MediaStream) => void;
   onUserMediaError: (error: string) => void;
+  onPlay: () => void;
+  onStop: () => void;
   screenshotFormat: "image/webp" | "image/png" | "image/jpeg";
   screenshotQuality: number;
   videoConstraints?: MediaStreamConstraints["video"];
@@ -76,6 +78,8 @@ export default class Webcam extends React.Component<WebcamProps, WebcamState> {
     mirrored: false,
     onUserMedia: () => { },
     onUserMediaError: () => { },
+    onPlay: () => { },
+    onStop: () => { },
     screenshotFormat: "image/webp",
     screenshotQuality: 0.92,
   };
@@ -107,6 +111,8 @@ export default class Webcam extends React.Component<WebcamProps, WebcamState> {
     if (!state.hasUserMedia) {
       this.requestUserMedia();
     }
+
+    this.addEvents();
   }
 
   componentDidUpdate(nextProps) {
@@ -309,6 +315,12 @@ export default class Webcam extends React.Component<WebcamProps, WebcamState> {
     }
   }
 
+  private addEvents() {
+    const { props } = this;
+    this.video?.addEventListener('play', props.onPlay)
+    this.video?.addEventListener('stop', props.onStop)
+  }
+
   private handleUserMedia(err, stream?: MediaStream) {
     const { props } = this;
 
@@ -344,6 +356,8 @@ export default class Webcam extends React.Component<WebcamProps, WebcamState> {
       forceScreenshotSourceSize,
       onUserMedia,
       onUserMediaError,
+      onPlay,
+      onStop,
       screenshotFormat,
       screenshotQuality,
       minScreenshotWidth,
